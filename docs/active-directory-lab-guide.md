@@ -860,9 +860,7 @@ To verify this, I opened **Command Prompt** and ran the following command:
 
 ```powershell
 whoami
-
 ```
-
 The result displayed:
 
 ```powershell
