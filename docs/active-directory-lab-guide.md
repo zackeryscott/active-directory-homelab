@@ -829,7 +829,7 @@ In this step, I tested the environment by logging into the client workstation us
 
 To test domain authentication, I logged into the Windows 11 client machine using the domain user account:
 
-* `josh.smith`
+* `j.smith`
 
 At the login screen:
 
