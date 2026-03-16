@@ -441,16 +441,6 @@ ping 192.168.1.100
 
 Successful replies confirm the systems can communicate across the network.
 
-### Verification Screenshots
-
-![Verification 1](../screenshots/step3-verification.png)
-
-![Verification 2](../screenshots/step3-verification2.png)
-
-![Verification 3](../screenshots/step3-verificaton3.png)
-
-![Verification 4](../screenshots/step3-verification4.png)
-
 ---
 
 ## Troubleshooting Network Connectivity
@@ -474,6 +464,17 @@ This change was applied across all virtual machines.
 ![Troubleshooting 3](../screenshots/step3-troubleshooting3.png)
 
 ![Troubleshooting 4](../screenshots/step3-troubleshooting4.png)
+
+
+### Verification Screenshots
+
+![Verification 1](../screenshots/step3-verification.png)
+
+![Verification 2](../screenshots/step3-verification2.png)
+
+![Verification 3](../screenshots/step3-verificaton3.png)
+
+![Verification 4](../screenshots/step3-verification4.png)
 
 ---
 
@@ -597,7 +598,7 @@ To begin configuring the domain structure:
 
 ### ADUC Screenshot
 
-![Creating OUs and Users 1](../screenshots/step5-creating-dus.png)
+![Creating OUs and Users 1](../screenshots/step5-creating-ous.png)
 
 ---
 
@@ -620,8 +621,6 @@ Using this process, I created the following Organizational Units:
 These OUs will later be used to organize servers and user accounts within the domain.
 
 ### OU Screenshots
-
-![Creating OUs 1](../screenshots/step5-creating-ous.png)
 
 ![Creating OUs 2](../screenshots/step5-creating-ous2.png)
 
@@ -652,6 +651,8 @@ Using this process, I created the following users:
 These accounts will be used later when testing domain authentication and logging into domain-joined machines.
 
 ### User Creation Screenshots
+
+![Creating Users 1](../screenshots/step5-creating-dus.png)
 
 ![Creating Users 1](../screenshots/step5-creating-dus2.png)
 
@@ -934,9 +935,6 @@ Possible improvements to expand this lab include:
 * Add a second domain controller for redundancy
 * Implement DHCP in the lab environment
 
-```
-::contentReference[oaicite:1]{index=1}
-```
 
 [1]: https://github.com/zackeryscott/active-directory-homelab/tree/main/screenshots "active-directory-homelab/screenshots at main · zackeryscott/active-directory-homelab · GitHub"
 
