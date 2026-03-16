@@ -21,6 +21,19 @@ The goal of this lab was to simulate a basic enterprise network environment and 
 
 ---
 
+# Lab Environment
+
+The lab consists of four virtual machines that simulate a small corporate network.
+
+| Machine | Role | IP Address |
+|-------|------|-----------|
+| GA-DC-01 | Domain Controller / DNS | 192.168.1.250 |
+| GA-SVR1 | Member Server | 192.168.1.251 |
+| GA-Core | Windows Server Core | 192.168.1.252 |
+| GA-Client | Windows 11 Workstation | 192.168.1.100 |
+
+---
+
 # Table of Contents
 
 - [Step 0 — Prerequisites](#step-0--prerequisites)
