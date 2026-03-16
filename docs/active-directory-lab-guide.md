@@ -1,1015 +1,945 @@
-Step 0 — Prerequisites  
+# Active Directory Homelab — Full Lab Guide
 
-Overview 
+This document provides a full walkthrough of building a small Active Directory homelab using VirtualBox, Windows Server 2025, and Windows 11.
 
-Before building the Active Directory home lab, we first need to download a few tools and operating system images. In this lab we’ll be using virtualization to simulate a small enterprise network that includes a domain controller, multiple servers, and a client workstation. 
+The goal of this lab was to simulate a basic enterprise network environment and gain hands-on experience with:
 
-Virtualization allows us to run multiple operating systems on a single computer. This makes it possible to safely test and configure enterprise infrastructure in a controlled lab environment without needing multiple physical machines. 
+- Virtual machine deployment
+- Internal network configuration
+- Static IP addressing
+- Active Directory Domain Services
+- DNS
+- Domain joining
+- Domain authentication
+- Basic troubleshooting
 
- 
+---
 
- 
+# Table of Contents
 
-Required Software 
+- [Step 0 — Prerequisites](#step-0--prerequisites)
+- [Step 1 — Creating the Virtual Machines](#step-1--creating-the-virtual-machines)
+- [Step 2 — Configuring the Virtual Network](#step-2--configuring-the-virtual-network)
+- [Step 3 — Configuring Static IP Addressing](#step-3--configuring-static-ip-addressing)
+- [Step 4 — Installing Active Directory Domain Services](#step-4--installing-active-directory-domain-services)
+- [Step 5 — Creating Organizational Units and Domain Users](#step-5--creating-organizational-units-and-domain-users)
+- [Step 6 — Joining Systems to the Domain](#step-6--joining-systems-to-the-domain)
+- [Step 7 — Testing Domain Authentication](#step-7--testing-domain-authentication)
+- [Step 8 — Lessons Learned](#step-8--lessons-learned)
 
-The following software and operating systems will be used throughout this lab: 
+---
 
-Virtualization Platform 
+# Step 0 — Prerequisites
 
-Oracle VM VirtualBox 
-VirtualBox will be used to create and manage the virtual machines that make up the lab environment. 
+## Overview
 
-Operating Systems 
+Before building the Active Directory home lab, I first needed to download a few tools and operating system images.
 
-Windows Server 2025 
+In this lab, virtualization is used to simulate a small enterprise network that includes a domain controller, multiple servers, and a client workstation.
 
-This operating system will be used for the following machines: 
+Virtualization allows multiple operating systems to run on a single computer, making it possible to safely test and configure enterprise infrastructure in a controlled lab environment without needing multiple physical machines.
 
-Domain Controller 
+---
 
-Member Server 
+## Required Software
 
-Server Core system 
+### Virtualization Platform
 
-Windows 11 
+**Oracle VM VirtualBox**
 
-Windows 11 will be used for the client workstation that will eventually join the Active Directory domain. 
+VirtualBox is used to create and manage the virtual machines that make up the lab environment.
 
- 
+![VirtualBox Dashboard](../screenshots/step0-virtualbox-dashboard.png)
 
-  
+### Operating Systems
 
-Downloads 
+**Windows Server 2025**
 
-Download and install the following components before starting the lab. 
+This operating system is used for the following machines:
 
-VirtualBox Installer 
-(https://www.virtualbox.org/wiki/Downloads) 
+- Domain Controller
+- Member Server
+- Server Core system
 
-Windows Server 2025 Evaluation ISO 
-(https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2025) 
+**Windows 11**
 
-Windows 11 ISO 
-(https://www.microsoft.com/en-us/software-download/windows11) 
+Windows 11 is used for the client workstation that will eventually join the Active Directory domain.
 
- 
+---
 
- 
+## Downloads
 
-Lab Environment Components 
+Download and install the following components before starting the lab.
 
-This home lab will consist of four virtual machines that simulate a simplified corporate network. 
+### VirtualBox Installer
 
-GA-DC-01 
-Primary Domain Controller and DNS Server 
+https://www.virtualbox.org/wiki/Downloads
 
-GA-SVR1 
-Member Server joined to the domain 
+![VirtualBox Download](../screenshots/step0-virtualbox-download.png)
 
-GA-Core 
-Windows Server Core system used for command-line server administration 
+### Windows Server 2025 Evaluation ISO
 
-GA-Client 
+https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2025
 
-Windows 11 workstation that will join the domain and authenticate with Active Directory 
+![Windows Server 2025 ISO](../screenshots/step0-windows-server2025.png)
 
- 
+### Windows 11 ISO
 
- 
+https://www.microsoft.com/en-us/software-download/windows11
 
- 
+![Windows 11 ISO](../screenshots/step0-windows11.png)
 
-Purpose of the Lab 
+---
 
-This environment will be used to practice several core Windows infrastructure skills, including: 
+## Lab Environment Components
 
-Installing Active Directory Domain Services 
+This homelab consists of four virtual machines that simulate a simplified corporate network.
 
-Configuring DNS 
+- **GA-DC-01** — Primary Domain Controller and DNS Server
+- **GA-SVR1** — Member Server joined to the domain
+- **GA-Core** — Windows Server Core system used for command-line server administration
+- **GA-Client** — Windows 11 workstation that will join the domain and authenticate with Active Directory
 
-Setting static IP addresses 
+---
 
-Deploying a domain controller 
+## Purpose of the Lab
 
-Domain authentication 
+This environment is used to practice several core Windows infrastructure skills, including:
 
-Administering Windows Server Core 
+- Installing Active Directory Domain Services
+- Configuring DNS
+- Setting static IP addresses
+- Deploying a domain controller
+- Domain authentication
+- Administering Windows Server Core
+- Joining systems to a Windows domain
 
-Joining systems to a Windows domain 
+These are foundational tasks commonly performed by system administrators and IT support professionals in enterprise environments.
 
-These are foundational tasks commonly performed by system administrators and IT support professionals in enterprise environments. 
+---
 
- 
+# Step 1 — Creating the Virtual Machines
 
- 
+## Overview
 
- 
+The first stage of building the homelab environment is creating the virtual machines that will simulate the servers and workstation used in a typical enterprise network.
 
-Lab Architecture 
+Using VirtualBox, I created four virtual machines that represent the core infrastructure of the lab environment:
 
- 
+- Domain Controller
+- Member Server
+- Server Core system
+- Client workstation
 
- 
+Each machine will later receive a static IP address and be joined to the Active Directory domain.
 
- 
+---
 
- 
+## Creating the Virtual Machines
 
-Step 1 – Creating the Virtual Machines 
+Open VirtualBox and create each virtual machine using the **New** option.
 
-Overview 
+When creating each machine, assign the appropriate name and operating system based on the ISO file being used.
 
-The first stage of building the home lab environment is creating the virtual machines that will simulate the servers and workstation used in a typical enterprise network. 
+![VM Creation 1](../screenshots/step1-vm-creation1.png)
 
-Using VirtualBox, we will create four virtual machines that represent the core infrastructure of the lab environment: 
+![VM Creation 2](../screenshots/step1-vm-creation2.png)
 
-• Domain Controller 
+The three server machines use the Windows Server ISO, while the client machine uses the Windows 11 ISO.
 
-• Member Server 
+---
 
-• Server Core system 
+## Virtual Machine List
 
-• Client workstation 
+After creating the systems, the VirtualBox manager should show all four machines.
 
-Each machine will later receive a static IP addresses and be joined to the Active Directory domain. 
+![VM List](../screenshots/step1-vm-list.png)
 
- 
+---
 
- 
+## Recommended Virtual Machine Resources
 
-Creating the Virtual Machines 
+To ensure the machines run smoothly, the following resource allocation is recommended.
 
-Open VirtualBox and create each virtual machine using the New option. 
+### Server Machines
 
-When creating each machine, assign the appropriate name and operating system based on the ISO file being used. 
+- Processors: 2 CPUs
+- Memory: 4 GB RAM
+- Storage: 60 GB virtual disk
 
- 
+### Client Machine
 
-The three server machines will use the Windows Server ISO, while the client machine will use the Windows 11 ISO. 
+- Processors: 2 CPUs
+- Memory: 4 GB RAM
+- Storage: 50 GB virtual disk
 
- 
+These settings provide enough resources for the lab while still being manageable on most host systems.
 
- 
+![VM Resources 1](../screenshots/step1-vm-resources1.png)
 
-Recommended Virtual Machine Resources 
+![VM Resources 2](../screenshots/step1-vm-resources2.png)
 
-To ensure the machines run smoothly, the following resource allocation is recommended. 
+---
 
-Server Machines 
+## Installing the Operating Systems
 
-Processors: 2 CPUs 
+After creating the virtual machines, attach the appropriate ISO file to each machine and start the installation process.
 
-Memory: 4 GB RAM 
+For the three server machines, install Windows Server.
 
-Storage: 60 GB virtual disk 
+During installation:
 
-Client Machine 
+- Select **Server with Desktop Experience** for **GA-DC-01** and **GA-SVR1**
+- Do **not** select Desktop Experience for **GA-Core**
 
-Processors: 2 CPUs 
+### Windows Server Installation
 
-Memory: 4 GB RAM 
+![Windows Server Setup 1](../screenshots/step1-win-server1.png)
 
-Storage: 50 GB virtual disk 
+![Windows Server Setup 2](../screenshots/step1-win-server2.png)
 
-These settings provide enough resources for the lab while still being manageable on most host systems. 
+![Windows Server Setup 3](../screenshots/step1-win-server3.png)
 
- 
+![Windows Server Setup 4](../screenshots/step1-win-server4.png)
 
- 
+![Windows Server Boot](../screenshots/step1-win-server-boot.png)
 
-Installing the Operating Systems 
+### Windows 11 Installation
 
-After creating the virtual machines, attach the appropriate ISO file to each machine and start the installation process. 
+For the client machine, install Windows 11 using the standard installation process.
 
- 
+![Windows 11 Install](../screenshots/step1-win11-install.png)
 
-For the three server machines, install Windows Server. 
+![Windows 11 Boot](../screenshots/step1-win11-boot.png)
 
- 
+### Server Core Boot
 
- 
+GA-Core is installed without Desktop Experience.
 
-During installation: 
+![Server Core Boot](../screenshots/step1-core-server-boot.png)
 
-Select Server with Desktop Experience for GA-DC-01 and GA-SVR1 
+Once installation is complete, allow each machine to boot fully before moving on to the next step.
 
-Do not select Desktop Experience for GA-Core 
+---
 
- 
+# Step 2 — Configuring the Virtual Network
 
-For the client machine, I'll be installing Windows 11 using the standard installation process. 
+## Overview
 
- 
+Before configuring IP addresses or installing Active Directory, the virtual machines must be connected to the same network so they can communicate with each other.
 
-Once installation is complete, allow each machine to boot fully before moving on to the next step. 
+VirtualBox offers several networking options. For this lab, I used an **Internal Network**, which allows the virtual machines to communicate with each other while remaining isolated from my host computer’s physical network.
 
- 
+This setup simulates a small internal corporate network.
 
- 
+---
 
- 
+## Network Configuration
 
- 
+All virtual machines in this lab are connected to the same internal network.
 
-Step 2 – Configuring the Virtual Network 
+- **Network Mode:** Internal Network
+- **Network Name:** HomelabNet
 
-Overview 
+The following machines must be connected to this network:
 
-Before configuring IP addresses or installing Active Directory, the virtual machines must be connected to the same network so they can communicate with each other. 
+- GA-DC-01
+- GA-SVR1
+- GA-Core
+- GA-Client
 
-VirtualBox offers several networking options. For this lab we will use an Internal Network, which allows the virtual machines to communicate with each other while remaining isolated from my host computer’s physical network. 
+Using the same network name ensures that all machines are placed on the same virtual network segment.
 
-This setup simulates a small internal corporate network. 
+---
 
- 
+## Configuring the Network Adapter
 
- 
+For each virtual machine:
 
-Network Configuration 
+1. Power off the virtual machine if it is currently running.
+2. Open the VirtualBox Manager.
+3. Select the virtual machine.
+4. Click **Settings**.
+5. Navigate to the **Network** section.
+6. Under **Adapter 1**, enable the network adapter.
+7. Set **Attached To** to **Internal Network**.
+8. Enter the network name **HomelabNet**.
+9. Click **OK** to save the configuration.
 
-All virtual machines in this lab will be connected to the same internal network. 
+Repeat this process for all four virtual machines.
 
-Network Mode: Internal Network 
+### Screenshots
 
-Network Name: HomelabNet 
+![VirtualBox Manager](../screenshots/step2-vm-manager.png)
 
-The following machines must be connected to this network: 
+![VM Settings](../screenshots/step2-settings.png)
 
-GA-DC-01 
+![Internal Network Configuration](../screenshots/step2-network-config.png)
 
-GA-SVR1 
+---
 
-GA-Core 
+## Purpose of the Internal Network
 
-GA-Client 
+Using an internal network provides several advantages for a lab environment:
 
-Using the same network name ensures that all machines are placed on the same virtual network segment. 
+- Allows all virtual machines to communicate with one another
+- Simulates an isolated corporate network environment
+- Prevents interference with the host computer’s home network
+- Provides a controlled environment for testing Active Directory
 
- 
+Once the virtual network is configured, I can move on to assigning static IP addresses.
 
- 
+---
 
-Configuring the Network Adapter 
+# Step 3 — Configuring Static IP Addressing
 
-For each virtual machine: 
+## Overview
 
-Power off the virtual machine if it is currently running. 
+In most real-world environments, servers use static IP addresses rather than dynamically assigned addresses from DHCP. This ensures that important services like Active Directory and DNS are always reachable at a known address.
 
-Open the VirtualBox Manager. 
+In this lab, each virtual machine is assigned a static IP address within the `192.168.1.0/24` network.
 
-Select the virtual machine. 
+The Domain Controller also serves as the DNS server for the environment.
 
-Click Settings. 
+---
 
-Navigate to the Network section. 
+## Network Addressing Plan
 
-Under Adapter 1, enable the network adapter. 
+### GA-DC-01
 
-Set Attached To to Internal Network. 
+- **Role:** Domain Controller and DNS Server
+- **IP Address:** 192.168.1.250
+- **Subnet Mask:** 255.255.255.0
+- **Default Gateway:** 192.168.1.1
+- **Preferred DNS:** 127.0.0.1
 
-Enter the network name HomelabNet. 
+### GA-SVR1
 
-Click OK to save the configuration. 
+- **Role:** Member Server
+- **IP Address:** 192.168.1.251
+- **Preferred DNS:** 192.168.1.250
 
-Repeat this process for all four virtual machines. 
+### GA-Core
 
- 
+- **Role:** Server Core System
+- **IP Address:** 192.168.1.252
+- **Preferred DNS:** 192.168.1.250
 
-Purpose of the Internal Network 
+### GA-Client
 
-Using an internal network provides several advantages for a lab environment: 
+- **Role:** Workstation
+- **IP Address:** 192.168.1.100
+- **Preferred DNS:** 192.168.1.250
 
-• Allows all virtual machines to communicate with one another 
+---
 
-• Simulates an isolated corporate network environment 
+## Configuring Static IP Addresses (Windows Server)
 
-• Prevents interference with the host computer’s home network 
+For **GA-DC-01** and **GA-SVR1**, I configured the static IP address using **Server Manager**.
 
-• Provides a controlled environment for testing Active Directory 
+1. Open **Server Manager**
+2. Select **Local Server**
+3. Click the **Ethernet** link
+4. Right-click the Ethernet adapter and select **Properties**
+5. Select **Internet Protocol Version 4 (TCP/IPv4)**
+6. Click **Properties**
+7. Choose **Use the following IP address**
+8. Enter the IP address configuration based on the network addressing plan
+9. Click **OK**
 
-Once the virtual network is configured, we can move on to assigning static IP addresses.  
+I repeated this process for **GA-SVR1** using its respective IP address.
 
- 
+### Windows Server Screenshots
 
- 
+![Windows Server Static IP 1](../screenshots/step3-win-server-staticip1.png)
 
- 
+![Windows Server Static IP 2](../screenshots/step3-win-server-staticip2.png)
 
-Step 3 – Configuring Static IP Addressing 
+![Windows Server Static IP 3](../screenshots/step3-win-server-staticip3.png)
 
-Overview 
+![Windows Server Static IP 4](../screenshots/step3-win-server-staticip4.png)
 
-In most real-world environments, servers use static IP addresses rather than dynamically assigned addresses from DHCP. This ensures that important services like Active Directory and DNS are always reachable at a known address. 
+---
 
-In this lab, each virtual machine will be assigned a static IP address within the 192.168.1.0/24 network. 
+## Configuring Static IP Addresses (Windows 11)
 
-The Domain Controller will also serve as the DNS server for the environment. 
+For the client machine:
 
- 
+1. Open **Control Panel**
+2. Select **Network and Internet**
+3. Click **Network and Sharing Center**
+4. Select **Change adapter settings**
+5. Right-click the Ethernet adapter and select **Properties**
+6. Select **Internet Protocol Version 4 (TCP/IPv4)**
+7. Click **Properties**
+8. Choose **Use the following IP address**
+9. Enter the IP address configuration based on the addressing plan
+10. Click **OK**
 
- 
+Set the DNS server to the Domain Controller so the client can locate the domain later.
 
-Network Addressing Plan 
+### Windows 11 Screenshots
 
-GA-DC-01 
+![Windows 11 Static IP 1](../screenshots/step3-win11-staticip1.png)
 
-Role: Domain Controller and DNS Server 
+![Windows 11 Static IP 2](../screenshots/step3-win11-staticip2.png)
 
-IP Address: 192.168.1.250 
+![Windows 11 Static IP 3](../screenshots/step3-win11-static3.png)
 
-Subnet Mask: 255.255.255.0 
+![Windows 11 Static IP 4](../screenshots/step3-win11-static4.png)
 
-Default Gateway: 192.168.1.1 
+![Windows 11 Static IP 5](../screenshots/step3-win11-static5.png)
 
-Preferred DNS: 127.0.0.1 
+![Windows 11 Static IP 6](../screenshots/step3-win11-static6.png)
 
-GA-SVR1 
+![Windows 11 Static IP 7](../screenshots/step3-win11-static7.png)
 
-Role: Member Server 
+---
 
-IP Address: 192.168.1.251 
+## Configuring Static IP on Server Core
 
-Preferred DNS: 192.168.1.250 
+Because **GA-Core** runs Server Core without a graphical interface, networking is configured using the **sconfig** utility.
 
-GA-Core 
+1. Log into **GA-Core**
+2. From the main menu, select **Option 8 — Network Settings**
+3. Select the network adapter number
+4. Choose **Option 1 — Set Network Adapter Address**
+5. Select **S** for Static
+6. Enter the following:
+   - IP Address: 192.168.1.252
+   - Subnet Mask: 255.255.255.0
+   - Default Gateway: 192.168.1.1
+7. Return to the menu
+8. Select **Option 2 — Set DNS Servers**
+9. Enter the DNS server address for the Domain Controller:
+   - 192.168.1.250
 
-Role: Server Core System 
+### Server Core Screenshots
 
-IP Address: 192.168.1.252 
+![Server Core Static IP 1](../screenshots/step3-core-staticip1.png)
 
-Preferred DNS: 192.168.1.250 
+![Server Core Static IP 2](../screenshots/step3-core-staticip2.png)
 
-GA-Client 
+![Server Core Static IP 3](../screenshots/step3-core-staticip3.png)
 
-Role: Workstation 
+![Server Core Static IP 4](../screenshots/step3-core-staticip4.png)
 
-IP Address: 192.168.1.100 
+![Server Core DNS](../screenshots/step3-core-dns.png)
 
-Preferred DNS: 192.168.1.250 
+---
 
- 
+## Verifying Network Connectivity
 
- 
+Once all IP addresses are configured, I verified that the machines could communicate by running the following commands from each machine:
 
-Configuring Static IP Addresses (Windows Server) 
+```powershell
+ping 192.168.1.250
+ping 192.168.1.251
+ping 192.168.1.252
+ping 192.168.1.100
+````
 
-For GA-DC-01, GA-SVR1,  I will configure the static IP address using Server Manager. 
+Successful replies confirm the systems can communicate across the network.
 
-Open Server Manager. 
+### Verification Screenshots
 
-Select Local Server. 
+![Verification 1](../screenshots/step3-verification.png)
 
-Click the Ethernet link 
+![Verification 2](../screenshots/step3-verification2.png)
 
-Right-click the Ethernet adapter and select Properties. 
+![Verification 3](../screenshots/step3-verificaton3.png)
 
-Select Internet Protocol Version 4 (TCP/IPv4). 
+![Verification 4](../screenshots/step3-verification4.png)
 
-Click Properties. 
+---
 
-Choose Use the following IP address. 
+## Troubleshooting Network Connectivity
 
-Here I will enter the IP address configuration(s) based on the network addressing plan provided above. 
+During testing, the servers initially could not ping each other even though the network configuration was correct.
 
-Click OK. 
+The issue turned out to be **Windows Firewall blocking ICMP traffic**.
 
-I'll repeat this process for GA-SVR1 using the respective IP address. 
+To fix this, the inbound rule **File and Printer Sharing (Echo Request - ICMPv4-In)** was enabled.
 
- 
+After enabling the rule, the machines were able to successfully respond to ping requests.
 
- 
+This change was applied across all virtual machines.
 
-Configuring Static IP Addresses (Windows 11) 
+### Troubleshooting Screenshots
 
-For the client machine: 
+![Troubleshooting 1](../screenshots/step3-troubleshooting.png)
 
-Open Control Panel. 
+![Troubleshooting 2](../screenshots/step3-troubleshooting2.png)
 
-Select Network and Internet. 
+![Troubleshooting 3](../screenshots/step3-troubleshooting3.png)
 
-Click Network and Sharing Center. 
+![Troubleshooting 4](../screenshots/step3-troubleshooting4.png)
 
-Select Change adapter settings. 
+---
 
-Right-click the Ethernet adapter and select Properties. 
+# Step 4 — Installing Active Directory Domain Services
 
-Select Internet Protocol Version 4 (TCP/IPv4). 
+## Overview
 
-Click Properties. 
+Now that the virtual machines are communicating and static IP addresses have been configured, the next step is to install **Active Directory Domain Services (AD DS)** on the server **GA-DC-01**.
 
-Choose use the following IP address. 
+Active Directory is used in most enterprise Windows environments to manage users, computers, and resources across a network. Once installed, **GA-DC-01** becomes the Domain Controller for the lab environment and also functions as the DNS server.
 
-Here I will enter the IP address configuration based on the addressing plan for the lab environment. 
+After this step is completed, the server hosts the new domain that the rest of the machines will join later in the lab.
 
-Click OK. 
+---
 
- 
+## Installing the Active Directory Role
 
-Set the DNS server to the Domain Controller so the client can locate the domain later. 
+On **GA-DC-01**:
 
- 
+1. Open **Server Manager**
+2. In the top right corner, click **Manage**
+3. Select **Add Roles and Features**
+4. Click **Next** on the **Before You Begin** page
+5. Select **Role-based or feature-based installation**
+6. Click **Next**
+7. Confirm **GA-DC-01** is selected as the destination server
+8. Click **Next**
+9. On the **Server Roles** page, check:
 
- 
+   * **Active Directory Domain Services**
+10. When prompted, click **Add Features**
+11. Continue through the wizard until the **Confirmation** page
+12. Click **Install**
 
-Configuring Static IP on Server Core 
+Once the installation completes, the server must be promoted to a Domain Controller.
 
-Because GA-Core runs Server Core without a graphical interface, networking is configured using the sconfig utility. 
+### AD DS Installation Screenshots
 
- 
+![Install AD DS 1](../screenshots/step4-install-adds.png)
 
-Log into GA-Core.. 
+![Install AD DS 2](../screenshots/step4-install-adds2.png)
 
-From the main menu, select Option 8 – Network Settings. 
+![Install AD DS 3](../screenshots/step4-install-adds3.png)
 
-Select the network adaptor number. 
+![Install AD DS 4](../screenshots/step4-install-adds4.png)
 
-Choose Option 1 – Set Network Adapter Address 
+---
 
-Select S for Static 
+## Promoting the Server to a Domain Controller
 
-Here I will enter the network configuration based on the addressing plan for this lab: 
+After the AD DS role is installed:
 
-IP Address: 192.168.1.252 
+1. Return to **Server Manager**
+2. Click the **notification flag**
+3. Select **Promote this server to a domain controller**
+4. Choose **Add a new forest**
+5. Use the domain name:
 
-Subnet Mask: 255.255.255.0 
+   * `homelab.local`
+6. Click **Next**
+7. On the **Domain Controller Options** page, leave the default settings selected
+8. Enter a password for **Directory Services Restore Mode (DSRM)**
+9. Continue through the remaining configuration pages
+10. On the **Prerequisites Check** page, confirm all checks pass
+11. Click **Install**
 
-Default Gateway: 192.168.1.1 
+The server automatically restarts after the installation completes.
 
-Return to the menu. 
+### Domain Controller Promotion Screenshots
 
-Select Option 2 – Set DNS Servers. 
+![Promote DC 1](../screenshots/step4-promote-dc.png)
 
-Here I will enter the DNS server address for the Domain Controller: 
+![Promote DC 2](../screenshots/step4-promote-dc2.png)
 
-192.168.1.250 
+![Promote DC 3](../screenshots/step4-promote-dc3.png)
 
- 
+![Promote DC 4](../screenshots/step4-promote-dc4.png)
 
- 
+---
 
-Verifying Network Connectivity 
+## Verifying Domain Controller Installation
 
-Once all IP addresses are configured, I will verify that the machines can communicate by running the p. 
+After the server finished installing Active Directory and restarted, I logged back into **GA-DC-01** to verify that the installation completed successfully.
 
-I'll do this by opening a command prompt or PowerShell window and run the following commands from each machine. 
+To confirm that the server had been promoted to a Domain Controller:
 
-ping 192.168.1.250 
+1. Open **Server Manager**
+2. Confirm that Active Directory services are installed and running
+3. Open **Active Directory Users and Computers**
+4. Confirm the domain **homelab.local** is visible
 
-ping 192.168.1.251 
+Seeing the domain structure confirms that **GA-DC-01** had successfully been promoted to a Domain Controller and that the Active Directory environment was now active.
 
-ping 192.168.1.252 
+### Verification Screenshots
 
-ping 192.168.1.100 
+![AD Verification 1](../screenshots/step4-verification.png)
 
- 
+![AD Verification 2](../screenshots/step4-verification2.png)
 
-Successful replies confirm the systems can communicate across the network. 
+---
 
- 
+# Step 5 — Creating Organizational Units and Domain Users
 
- 
+## Overview
 
-Troubleshooting Network Connectivity 
+With Active Directory now installed and **GA-DC-01** functioning as the Domain Controller, the next step is to begin organizing the domain structure.
 
-During testing, the servers initially could not ping each other even though the network configuration was correct. 
+In most enterprise environments, administrators use **Organizational Units (OUs)** to group objects such as users, computers, and servers. This makes it easier to manage permissions, apply group policies, and organize systems within the domain.
 
-The issue turned out to be Windows Firewall blocking ICMP traffic. 
+For this lab, I created several Organizational Units to simulate how systems and users might be organized inside a small company environment.
 
-To fix this, the inbound rule File and Printer Sharing (Echo Request – ICMPv4-In) was enabled. 
+---
 
-After enabling the rule, the machines were able to successfully respond to ping requests. 
+## Opening Active Directory Users and Computers
 
-This change was applied across all virtual machines. 
+To begin configuring the domain structure:
 
- 
+1. Open **Active Directory Users and Computers** on **GA-DC-01**
+2. Expand the domain **homelab.local**
+3. View the default Active Directory structure
 
-Allowing ICMP (Ping) Through the Firewall 
+### ADUC Screenshot
 
-An inbound firewall rule was created to allow ICMP echo requests: 
+![Creating OUs and Users 1](../screenshots/step5-creating-dus.png)
 
-On GA-SVR1: 
+---
 
-Open Windows Defender Firewall 
+## Creating Organizational Units
 
-Click Advanced Settings 
+To organize the environment, I created several Organizational Units inside the domain.
 
-Select Inbound Rules 
+1. Right-click the domain **homelab.local**
+2. Select **New**
+3. Click **Organizational Unit**
+4. Enter a name for the OU
+5. Click **OK**
 
-Enable rule: 
+Using this process, I created the following Organizational Units:
 
-File and Printer Sharing (Echo Request - ICMPv4-In) 
+* Servers
+* Employees
+* IT Admins
 
-After enabling the rule, the machines were able to successfully respond to ping requests. 
+These OUs will later be used to organize servers and user accounts within the domain.
 
- 
+### OU Screenshots
 
-This change was applied across all virtual machines except Server Core. For Server Core we simply select option 4 then enable remote management. 
+![Creating OUs 1](../screenshots/step5-creating-ous.png)
 
- 
+![Creating OUs 2](../screenshots/step5-creating-ous2.png)
 
- 
+![Creating OUs 3](../screenshots/step5-creating-ous3.png)
 
-Verification 
+---
 
-Connectivity was confirmed  by successfully pinging: 
+## Creating Domain Users
 
-GA-DC-01 → 192.168.1.250 
+Next, I created several user accounts to simulate employees within the environment.
 
-GA-SVR1 → 192.168.1.251 
+To create a user account:
 
-GA-Core → 192.168.1.252 
+1. Right-click the **Employees** Organizational Unit
+2. Select **New**
+3. Click **User**
+4. Enter the user’s first name, last name, and username
+5. Click **Next**
+6. Assign a password for the account
+7. Complete the wizard to create the user
 
-GA-Client → 192.168.1.100 
+Using this process, I created the following users:
 
- 
+* josh.smith
+* sally.doe
+* helpdesk.admin
 
- 
+These accounts will be used later when testing domain authentication and logging into domain-joined machines.
 
- 
+### User Creation Screenshots
 
- 
+![Creating Users 1](../screenshots/step5-creating-dus2.png)
 
-Step 4 — Installing Active Directory Domain Services 
+![Creating Users 2](../screenshots/step5-creating-dus3.png)
 
-Overview 
+---
 
-Now that the virtual machines are communicating and static IP addresses have been configured, the next step is to install Active Directory Domain Services (AD DS) on the server GA-DC-01. 
+## Verifying the Organizational Structure
 
-Active Directory is used in most enterprise Windows environments to manage users, computers, and resources across a network. Once installed, GA-DC-01 will become the Domain Controller for the lab environment and will also function as the DNS server. 
+After creating the Organizational Units and user accounts, I reviewed the structure inside **Active Directory Users and Computers** to verify everything had been created correctly.
 
-After this step is completed, the server will host the new domain that the rest of the machines will join later in the lab. 
+At this point, the domain structure included the newly created OUs as well as the test user accounts inside the **Employees** organizational unit.
 
- 
+This confirms that Active Directory is functioning correctly and that domain objects can be created and managed successfully.
 
- 
+---
 
-Installing the Active Directory Role 
+# Step 6 — Joining Systems to the Domain
 
-On GA-DC-01, open Server Manager. 
+## Overview
 
-In the top right corner of Server Manager, click Manage. 
+With Active Directory installed and the domain structure in place, the next step is to join the remaining machines to the domain.
 
-Select Add Roles and Features. 
+Joining a computer to a domain allows it to authenticate with Active Directory and be managed centrally by the Domain Controller. Once a system joins the domain, users can log in with domain accounts and administrators can manage the system through Active Directory.
 
-The Add Roles and Features Wizard will open. 
+In this step, I joined the following machines to the domain `homelab.local`:
 
-Click Next on the Before You Begin page. 
+* GA-SVR1
+* GA-Core
+* GA-Client
 
-Select Role-based or feature-based installation. 
+---
 
-Click Next. 
+## Joining GA-SVR1 to the Domain
 
-Confirm that GA-DC-01 is selected as the destination server. 
+To begin, I joined the member server **GA-SVR1** to the domain.
 
-Click Next. 
+1. Open **Server Manager**
+2. Select **Local Server**
+3. Click the **Workgroup** link next to the computer name
+4. In the **System Properties** window, click **Change**
+5. Select **Domain**
+6. Enter the domain name:
 
-On the Server Roles page, check the box for: 
+   * `homelab.local`
+7. Click **OK**
+8. When prompted, enter the domain administrator credentials
+9. Restart the server to complete the process
 
-Active Directory Domain Services 
+### GA-SVR1 Screenshots
 
-A window will appear asking to add required features. Click Add Features. 
+![Join Server 1](../screenshots/step6-joinsvr.png)
 
-Click Next. 
+![Join Server 2](../screenshots/step6-joinsvr2.png)
 
-Continue through the wizard by clicking Next until you reach the Confirmation page. 
+![Join Server 3](../screenshots/step6-joinsvr3.png)
 
-Click Install to begin installing the Active Directory Domain Services role. 
+---
 
-Once the installation completes, the server will need to be promoted to a Domain Controller. 
+## Joining GA-Core to the Domain
 
- 
+Because **GA-Core** runs Windows Server Core, the domain join process is completed using the **sconfig** utility.
 
- 
+1. Log into **GA-Core**
+2. From the main menu, select **Option 1 — Domain/Workgroup**
+3. Choose **D** to join a domain
+4. Enter the domain name:
 
-Promoting the Server to a Domain Controller 
+   * `homelab.local`
+5. When prompted, enter the credentials for the domain administrator account
+6. Confirm the changes and allow the server to restart
 
-After the AD DS role is installed, return to Server Manager. 
+After the restart, **GA-Core** was successfully joined to the domain.
 
-You will see a notification flag in the top right corner indicating that additional configuration is required. 
+### GA-Core Screenshots
 
-Click the notification flag. 
+![Join Core 1](../screenshots/step6-joincore.png)
 
-Select Promote this server to a domain controller. 
+![Join Core 2](../screenshots/step6-joincore2.png)
 
-The Active Directory Domain Services Configuration Wizard will open. 
+---
 
-Choose Add a new forest. 
+## Joining GA-Client to the Domain
 
-I will use the following domain name: 
+Next, I joined the Windows 11 workstation to the domain.
 
-homelab.local 
+1. On **GA-Client**, open **Control Panel**
+2. Select **System and Security**
+3. Click **System**
+4. Select **Advanced system settings**
+5. In the **Computer Name** tab, click **Change**
+6. Select **Domain**
+7. Enter:
 
-Click Next. 
+   * `homelab.local`
+8. Click **OK** and enter the domain administrator credentials when prompted
+9. After receiving confirmation, restart the machine
 
-On the Domain Controller Options page: 
+### GA-Client Screenshots
 
-Leave the default settings selected. 
+![Join Client 1](../screenshots/step6-joinclient.png)
 
-Enter a password for Directory Services Restore Mode (DSRM). 
+![Join Client 2](../screenshots/step6-joinclient2.png)
 
-Click Next. 
+![Join Client 3](../screenshots/step6-joinclient3.png)
 
-Continue clicking Next through the remaining configuration pages. 
+![Join Client 4](../screenshots/step6-joinclient4.png)
 
-On the Prerequisites Check page, confirm that all checks pass. 
+---
 
-Click Install. 
+## Verifying the Domain Join
 
-The server will automatically restart after the installation completes. 
+After all systems restarted, I verified that the machines had successfully joined the domain.
 
- 
+From **GA-DC-01**, I opened **Active Directory Users and Computers** and confirmed that the newly joined computers appeared in the domain.
 
- 
+At this point, the lab environment now includes multiple systems joined to the `homelab.local` domain.
 
-Verifying Domain Controller Installation 
+### Domain Join Verification
 
-After the server finished installing Active Directory and restarted, I logged back into GA-DC-01 to verify that the installation completed successfully. 
+![Verify Domain Join](../screenshots/step6-verify-domain-join.png)
 
-To confirm that the server had been promoted to a Domain Controller, I opened Server Manager and checked that the Active Directory services were now installed and running. 
+---
 
-Next, I opened the administrative tool Active Directory Users and Computers. 
+## Organizing Domain Computers
 
-Within the console, I was able to see the newly created domain: 
+After joining the machines to the domain, I moved them into the appropriate Organizational Units to keep the domain structure organized.
 
-homelab.local 
+Using **Active Directory Users and Computers**:
 
-Seeing the domain structure within this tool confirmed that GA-DC-01 had successfully been promoted to a Domain Controller and that the Active Directory environment was now active. 
+* I moved the servers into the **Servers** OU
+* I placed the client workstation in the **Computers** OU
 
- 
+This helps keep servers and workstations separated and reflects how systems are typically organized in many Active Directory environments.
 
- 
+### Organizing Domain Computers
 
- 
+![Organizing Domain Computers](../screenshots/step6-organizing-domain-comptuers.png)
 
-Step 5 — Creating Organizational Units and Domain Users 
+---
 
-Overview 
+# Step 7 — Testing Domain Authentication
 
-With Active Directory now installed and GA-DC-01 functioning as the Domain Controller, the next step is to begin organizing the domain structure. 
+## Overview
 
-In most enterprise environments, administrators use Organizational Units (OUs) to group objects such as users, computers, and servers. This makes it easier to manage permissions, apply group policies, and organize systems within the domain. 
+With the servers and client workstation successfully joined to the domain, the final step is to verify that domain authentication is working properly.
 
-For this lab, I created several Organizational Units to simulate how systems and users might be organized inside a small company environment. 
+One of the main benefits of Active Directory is centralized authentication. This allows users to log into any domain-joined machine using their domain credentials instead of local accounts.
 
- 
+In this step, I tested the environment by logging into the client workstation using one of the domain user accounts that was created earlier.
 
- 
+---
 
-Opening Active Directory Users and Computers 
+## Signing in with a Domain User
 
-To begin configuring the domain structure, I opened the Active Directory Users and Computers management console on GA-DC-01. 
+To test domain authentication, I logged into the Windows 11 client machine using the domain user account:
 
-This tool is used to manage domain objects such as users, groups, computers, and organizational units. 
+* `josh.smith`
 
-After opening the console, I expanded the domain homelab.local to view the default Active Directory structure. 
+At the login screen:
 
- 
+1. Restart or sign out of **GA-Client**
+2. Select **Other user**
+3. Enter the username using the following format:
 
- 
+   * `homelab\j.smith`
+4. Enter the password that was assigned to the user account
+5. Click **Sign in**
 
-Creating Organizational Units 
+After signing in, Windows created a new user profile for the domain account and loaded the desktop environment.
 
-To organize the environment, I created several Organizational Units inside the domain. 
+### Sign-In Screenshots
 
-Right-click the domain homelab.local 
+![Sign In 1](../screenshots/step7-sign-in-du.png)
 
-Select New 
+![Sign In 2](../screenshots/step7-sign-in-du2.png)
 
-Click Organizational Unit 
+---
 
-Enter a name for the OU 
+## Verifying the Domain Login
 
-Click OK 
+Once logged in, I confirmed that the user account was authenticated by the domain.
 
-Using this process, I created the following Organizational Units: 
+To verify this, I opened **Command Prompt** and ran the following command:
 
-Servers 
+```powershell
+whoami
+```
 
-Employees 
+The result displayed:
 
-IT Admins 
+```powershell
+homelab\j.smith
+```
 
-These OUs will later be used to organize servers and user accounts within the domain. 
+This confirms that the system successfully authenticated the user through the `homelab.local` domain.
 
- 
+### Verification Screenshot
 
- 
+![Domain Login Verification](../screenshots/step7-verify.png)
 
-Creating Domain Users 
+---
 
-Next, I created several user accounts to simulate employees within the environment. 
+## Confirmation of a Working Domain Environment
 
-To create a user account: 
+At this point, the Active Directory environment is fully operational.
 
-Right-click the Employees Organizational Unit 
+* The Domain Controller is managing authentication
+* The servers are joined to the domain
+* Users are able to sign into domain-joined machines using domain credentials
 
-Select New 
+This confirms that the core components of the Active Directory lab environment are functioning correctly.
 
-Click User 
+---
 
-Enter the user’s first name, last name, and username 
+# Step 8 — Lessons Learned
 
-Click Next 
+## Overview
 
-Assign a password for the account 
+Building this Active Directory homelab provided hands-on experience with several core Windows infrastructure concepts. Throughout the process, I was able to practice configuring servers, managing network settings, and deploying a basic domain environment similar to what might exist in a small organization.
 
-Complete the wizard to create the user 
+Working through the lab step-by-step helped reinforce how the different components of an Active Directory environment work together.
 
-Using this process, I created the following users: 
+---
 
-josh.smith 
+## Key Concepts Practiced
 
-sally.doe 
+During this lab, I gained practical experience with several important system administration tasks, including:
 
-helpdesk.admin 
+* Creating and managing virtual machines using VirtualBox
+* Configuring internal virtual networks
+* Assigning static IP addresses to servers and clients
+* Installing Active Directory Domain Services
+* Promoting a server to a Domain Controller
+* Creating Organizational Units and domain users
+* Joining systems to an Active Directory domain
+* Authenticating users using domain credentials
 
- 
+These tasks represent many of the foundational skills used by system administrators when managing Windows-based networks.
 
-These accounts will be used later when testing domain authentication and logging into domain-joined machines. 
+---
 
- 
+## Troubleshooting Experience
 
- 
+During the lab setup, I encountered a few issues that required troubleshooting.
 
-Verifying the Organizational Structure 
+One example occurred while testing domain authentication on the Windows 11 client machine. Initially, the login attempt failed because the Domain Controller was powered off, preventing the client from contacting the domain for authentication.
 
-After creating the Organizational Units and user accounts, I reviewed the structure inside Active Directory Users and Computers to verify everything had been created correctly. 
+After starting the Domain Controller again, the client was able to successfully authenticate the domain user account.
 
-At this point, the domain structure included the newly created OUs as well as the test user accounts inside the Employees organizational unit. 
+This reinforced the importance of ensuring that critical infrastructure services, such as Domain Controllers and DNS servers, are available when systems need to authenticate with the domain.
 
-This confirms that Active Directory is functioning correctly and that domain objects can be created and managed successfully. 
+---
 
- 
+## Final Result
 
- 
+By the end of this lab, I successfully built a small Active Directory environment consisting of:
 
- 
+* A Domain Controller
+* Multiple servers
+* A client workstation
 
-Step 6 — Joining Systems to the Domain 
+All systems were able to communicate across the network, join the domain, and authenticate using domain user accounts.
 
-Overview 
+This project helped me better understand how Windows domain environments are structured and managed in real-world IT environments.
 
-With Active Directory installed and the domain structure in place, the next step is to join the remaining machines to the domain. 
+### Final Result Screenshot
 
-Joining a computer to a domain allows it to authenticate with Active Directory and be managed centrally by the Domain Controller. Once a system joins the domain, users can log in with domain accounts and administrators can manage the system through Active Directory. 
+![Final Result](../screenshots/step8-final-result.png)
 
-In this step, I joined the following machines to the domain homelab.local: 
+---
 
-GA-SVR1 
+# Future Improvements
 
-GA-Core 
+Possible improvements to expand this lab include:
 
-GA-Client 
+* Implement Group Policy Objects (GPO)
+* Create additional domain users and groups
+* Configure shared folders with permissions
+* Add a second domain controller for redundancy
+* Implement DHCP in the lab environment
 
- 
+```
+::contentReference[oaicite:1]{index=1}
+```
 
- 
+[1]: https://github.com/zackeryscott/active-directory-homelab/tree/main/screenshots "active-directory-homelab/screenshots at main · zackeryscott/active-directory-homelab · GitHub"
 
-Joining GA-SVR1 to the Domain 
-
-To begin, I joined the member server GA-SVR1 to the domain. 
-
-On GA-SVR1, open Server Manager. 
-
-Select Local Server. 
-
-Click the Workgroup link next to the computer name. 
-
-In the System Properties window, click Change. 
-
-Select Domain. 
-
-Enter the domain name: 
-
-homelab.local 
-
-Click OK. 
-
-When prompted, I entered the domain administrator credentials. 
-
-After the credentials were accepted, the server displayed a message confirming that it had successfully joined the domain. 
-
-The system was then restarted to complete the process. 
-
- 
-
- 
-
-Joining GA-Core to the Domain 
-
-Because GA-Core runs Windows Server Core, the domain join process is completed using the sconfig utility. 
-
-Log into GA-Core. 
-
-From the main menu, select Option 1 — Domain/Workgroup. 
-
-Choose D to join a domain. 
-
-Enter the domain name: 
-
-homelab.local 
-
-When prompted, enter the credentials for the domain administrator account. 
-
-Confirm the changes and allow the server to restart. 
-
-After the restart, GA-Core was successfully joined to the domain. 
-
- 
-
- 
-
-Joining GA-Client to the Domain 
-
-Next, I joined the Windows 11 workstation to the domain. 
-
-On GA-Client, open Control Panel. 
-
-Select System and Security. 
-
-Click System. 
-
-Select Advanced system settings. 
-
-In the Computer Name tab, click Change. 
-
-Select Domain. 
-
-Enter: 
-
-homelab.local 
-
-Click OK and enter the domain administrator credentials when prompted. 
-
-After receiving confirmation that the computer joined the domain successfully, I restarted the machine. 
-
- 
-
-Verifying the Domain Join 
-
-After all systems restarted, I verified that the machines had successfully joined the domain. 
-
-From GA-DC-01, I opened Active Directory Users and Computers and confirmed that the newly joined computers appeared in the domain. 
-
-At this point, the lab environment now includes multiple systems joined to the homelab.local domain. 
-
-Organizing Domain Computers 
-
-After joining the machines to the domain, I moved them into the appropriate Organizational Units to keep the domain structure organized. 
-
-Using Active Directory Users and Computers, I moved the servers into the Servers OU and placed the client workstation in the Computers OU. 
-
-This helps keep servers and workstations separated and reflects how systems are typically organized in many Active Directory environments. 
-
- 
-
- 
-
- 
-
-Step 7 — Testing Domain Authentication 
-
-Overview 
-
-With the servers and client workstation successfully joined to the domain, the final step is to verify that domain authentication is working properly. 
-
-One of the main benefits of Active Directory is centralized authentication. This allows users to log into any domain-joined machine using their domain credentials instead of local accounts. 
-
-In this step, I tested the environment by logging into the client workstation using one of the domain user accounts that was created earlier. 
-
- 
-
- 
-
-Signing in with a Domain User 
-
-To test domain authentication, I logged into the Windows 11 client machine using the domain user account josh.smith. 
-
-On GA-Client, restart or sign out of the system. 
-
-At the login screen, select Other user. 
-
-Enter the domain username using the following format: 
-
-homelab\j.smith 
-
-Enter the password that was assigned to the user account. 
-
-Click Sign in. 
-
-After signing in, Windows created a new user profile for the domain account and loaded the desktop environment. 
-
- 
-
-Verifying the Domain Login 
-
-Once logged in, I confirmed that the user account was authenticated by the domain. 
-
-To verify this, I opened Command Prompt and ran the following command: 
-
-whoami 
-
-The result displayed the following: 
-
-Homelab\j.smith 
-
-This confirms that the system successfully authenticated the user through the homelab.local domain. 
-
- 
-
- 
-
-Confirmation of a Working Domain Environment 
-
-At this point, the Active Directory environment is fully operational. 
-
-The Domain Controller is managing authentication, the servers are joined to the domain, and users are able to sign into domain-joined machines using domain credentials. 
-
-This confirms that the core components of the Active Directory lab environment are functioning correctly. 
-
- 
-
- 
-
- 
-
-Step 8 — Lessons Learned 
-
-Overview 
-
-Building this Active Directory home lab provided hands-on experience with several core Windows infrastructure concepts. Throughout the process, I was able to practice configuring servers, managing network settings, and deploying a basic domain environment similar to what might exist in a small organization. 
-
-Working through the lab step-by-step helped reinforce how the different components of an Active Directory environment work together. 
-
- 
-
- 
-
-Key Concepts Practiced 
-
-During this lab I gained practical experience with several important system administration tasks, including: 
-
-• Creating and managing virtual machines using VirtualBox 
-
-• Configuring internal virtual networks 
-
-• Assigning static IP addresses to servers and clients 
-
-• Installing Active Directory Domain Services 
-
-• Promoting a server to a Domain Controller 
-
-• Creating Organizational Units and domain users 
-
-• Joining systems to an Active Directory domain 
-
-• Authenticating users using domain credentials 
-
-These tasks represent many of the foundational skills used by system administrators when managing Windows-based networks. 
-
- 
-
- 
-
-Troubleshooting Experience 
-
-During the lab setup I encountered a few issues that required troubleshooting. 
-
-One example occurred while testing domain authentication on the Windows 11 client machine. Initially the login attempt failed because the Domain Controller was powered off, preventing the client from contacting the domain for authentication. 
-
-After starting the Domain Controller again, the client was able to successfully authenticate the domain user account. 
-
-This reinforced the importance of ensuring that critical infrastructure services, such as Domain Controllers and DNS servers, are available when systems need to authenticate with the domain. 
-
- 
-
- 
-
-Final Result 
-
-By the end of this lab, I successfully built a small Active Directory environment consisting of a Domain Controller, multiple servers, and a client workstation. 
-
-All systems were able to communicate across the network, join the domain, and authenticate using domain user accounts. 
-
-This project helped me better understand how Windows domain environments are structured and managed in real-world IT environments. 
-
- 
-
- 
-
-Future Improvements 
-
-  
-
-• Implement Group Policy Objects (GPO) 
-
-• Create additional domain users and groups 
-
-• Configure shared folders with permissions 
-
-• Add a second domain controller for redundancy 
-
-• Implement DHCP in the lab environment 
 
  
 
