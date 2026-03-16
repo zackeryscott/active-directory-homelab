@@ -15,6 +15,12 @@ The goal of this lab was to simulate a basic enterprise network environment and 
 
 ---
 
+## Lab Architecture
+
+![Active Directory Lab Network](../images/network-diagram.png)
+
+---
+
 # Table of Contents
 
 - [Step 0 — Prerequisites](#step-0--prerequisites)
