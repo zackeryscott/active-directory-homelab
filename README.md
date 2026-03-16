@@ -1,244 +1,172 @@
 # Active Directory Homelab
 
-This project documents the process of building an Active Directory home lab using VirtualBox and Windows Server 2025. The goal of this lab was to simulate a small enterprise environment and gain hands-on experience with Active Directory, DNS, networking, and domain authentication.
+<p align="left">
+  <img src="https://img.shields.io/badge/Windows%20Server-2025-0078D6?style=for-the-badge&logo=windows" alt="Windows Server 2025" />
+  <img src="https://img.shields.io/badge/Windows-11-0078D6?style=for-the-badge&logo=windows" alt="Windows 11" />
+  <img src="https://img.shields.io/badge/Oracle-VirtualBox-183A61?style=for-the-badge&logo=virtualbox" alt="Oracle VirtualBox" />
+  <img src="https://img.shields.io/badge/Active%20Directory-Configured-0A66C2?style=for-the-badge" alt="Active Directory" />
+  <img src="https://img.shields.io/badge/DNS-Configured-2EA44F?style=for-the-badge" alt="DNS Configured" />
+  <img src="https://img.shields.io/badge/Status-Completed-2EA44F?style=for-the-badge" alt="Project Completed" />
+</p>
+
+## Overview
+
+This project demonstrates the design and deployment of a small enterprise-style **Active Directory homelab** built with **Oracle VirtualBox**, **Windows Server 2025**, and **Windows 11**.
+
+The environment simulates a real-world business network with a:
+
+- **Domain Controller**
+- **Member Server**
+- **Server Core system**
+- **Domain-joined Windows 11 client**
+
+This lab was built to strengthen hands-on skills in:
+
+- Windows Server administration
+- Active Directory Domain Services (AD DS)
+- DNS configuration
+- Virtual networking
+- Domain management
+- Technical documentation
 
 ---
 
-# Network Architecture
+## Table of Contents
+
+- [Network Architecture](#network-architecture)
+- [Lab Environment](#lab-environment)
+- [Technologies Used](#technologies-used)
+- [Skills Demonstrated](#skills-demonstrated)
+- [Project Highlights](#project-highlights)
+- [Full Lab Guide](#full-lab-guide)
+- [Build Summary](#build-summary)
+- [Lessons Learned](#lessons-learned)
+- [Why This Project Matters](#why-this-project-matters)
+
+---
+
+## Network Architecture
+
+This lab uses an internal VirtualBox network to simulate a small enterprise Active Directory environment.
 
 ![Network Diagram](images/network-diagram.png)
 
----
-
-# Lab Environment
-
-The lab consists of four virtual machines that simulate a small corporate network.
-
-| Machine | Role | IP Address |
-|-------|------|-----------|
-| GA-DC-01 | Domain Controller / DNS | 192.168.1.250 |
-| GA-SVR1 | Member Server | 192.168.1.251 |
-| GA-Core | Windows Server Core | 192.168.1.252 |
-| GA-Client | Windows 11 Workstation | 192.168.1.100 |
----
-
-## Lab Build Highlights
-
-Below are some key steps from the lab build process.
-
-### Creating Virtual Machines
-
-![VM Creation](screenshots/step1-vm-creation1.png)
+All systems communicate through an internal virtual network, allowing domain services, authentication, and administrative testing in a controlled lab environment.
 
 ---
 
-### Configuring the Virtual Network
+## Lab Environment
 
-![Network Configuration](screenshots/step2-network-config.png)
-
----
-
-### Configuring Static IP Addresses
-
-![Server Core Static IP](screenshots/step3-core-staticip4.png)
-
----
-
-### Active Directory Domain Services Installed
-
-![Active Directory Installation](screenshots/step4-verification.png)
+| Machine Name | Operating System | Role | IP Address |
+|---|---|---|---|
+| GA-DC-01 | Windows Server 2025 | Domain Controller, DNS | 192.168.1.250 |
+| GA-SVR1 | Windows Server 2025 | Member Server | 192.168.1.251 |
+| GA-Core | Windows Server 2025 Core | Server Core System | 192.168.1.252 |
+| GA-Client | Windows 11 | Domain-Joined Workstation | 192.168.1.100 |
 
 ---
 
-### Domain Authentication Test
-
-![Domain Login](screenshots/step7-verify.png)
-
-
----
-
-# Step 0 — Prerequisites
-
-Before building the environment, the required software and installation media were downloaded.
-
-### Required Software
+## Technologies Used
 
 - Oracle VirtualBox
-- Windows Server 2025 Evaluation ISO
-- Windows 11 ISO
-
-### VirtualBox Dashboard
-
-![VirtualBox Dashboard](screenshots/step0-virtualbox-dashboard.png)
-
-### Download VirtualBox
-
-![VirtualBox Download](screenshots/step0-virtualbox-download.png)
-
-### Windows Server 2025 ISO
-
-![Windows Server 2025 ISO](screenshots/step0-windows-server2025.png)
-
-### Windows 11 ISO
-
-![Windows 11 ISO](screenshots/step0-windows11.png)
+- Windows Server 2025
+- Windows Server Core
+- Windows 11
+- Active Directory Domain Services (AD DS)
+- DNS
+- Windows networking
+- Virtual lab infrastructure
 
 ---
 
-# Step 1 — Creating the Virtual Machines
+## Skills Demonstrated
 
-Four virtual machines were created in VirtualBox to simulate the servers and client workstation used in the lab.
-
-### Creating the Virtual Machines
-
-![VM Creation](screenshots/step1-vm-creation1.png)
-
-![VM Creation](screenshots/step1-vm-creation2.png)
-
-### Virtual Machine List
-
-![VM List](screenshots/step1-vm-list.png)
-
-### VM Resource Configuration
-
-![VM Resources](screenshots/step1-vm-resources1.png)
-
-![VM Resources](screenshots/step1-vm-resources2.png)
-
-### Installing Windows Server
-
-![Windows Server Setup](screenshots/step1-win-server1.png)
-
-![Windows Server Setup](screenshots/step1-win-server2.png)
-
-![Windows Server Setup](screenshots/step1-win-server3.png)
-
-![Windows Server Setup](screenshots/step1-win-server4.png)
-
-![Windows Server Boot](screenshots/step1-win-server-boot.png)
-
-
-### Installing Windows 11
-
-![Windows 11 Install](screenshots/step1-win11-install.png)
-
-![Windows 11 Boot](screenshots/step1-win11-boot.png)
-
-### Server Core Boot
-
-![Server Core Boot](screenshots/step1-core-server-boot.png)
+- Active Directory deployment
+- Domain Controller promotion
+- DNS configuration
+- Static IP addressing
+- Organizational Unit creation
+- User and account management
+- Domain joining Windows clients
+- Windows Server administration
+- Virtual networking
+- Authentication and connectivity testing
+- Technical documentation
 
 ---
 
-# Step 2 — Configuring the Virtual Network
+## Project Highlights
 
-All machines were connected to an internal VirtualBox network so they could communicate with each other while remaining isolated from the host network.
+### Domain Controller Setup
+Configured a Windows Server 2025 machine as the Domain Controller and installed Active Directory Domain Services.
 
-Network Settings:
+![Domain Controller Setup](screenshots/step4-verification.png)
 
-- Network Mode: Internal Network  
-- Network Name: **HomelabNet**
+### DNS Configuration
+Configured DNS to support name resolution and domain services across the lab environment.
 
-### VirtualBox Network Configuration
+![DNS Configuration](screenshots/step3-win-server-staticip4.png)
 
-![VM Manager](screenshots/step2-vm-manager.png)
+### Active Directory Users and Computers
+Created Organizational Units and user accounts to simulate a structured enterprise environment.
 
-![Network Settings](screenshots/step2-settings.png)
+![AD Users and Computers](screenshots/step8-final-result.png)
 
-![Network Configuration](screenshots/step2-network-config.png)
+### Domain Join
+Joined the Windows 11 client workstation to the Active Directory domain.
 
----
+![Domain Join](screenshots/step6-joinclient3.png)
 
-# Step 3 — Configuring Static IP Addresses
+### Authentication Testing
+Verified successful domain authentication by signing in with a domain user account.
 
-Each machine in the lab was assigned a static IP address to ensure reliable communication between systems and to support domain services.
-
-### Server Core Network Configuration
-
-![Static IP Configuration](screenshots/step3-core-staticip1.png)
-
-![Static IP Configuration](screenshots/step3-core-staticip2.png)
-
-![Static IP Configuration](screenshots/step3-core-staticip3.png)
-
-![Static IP Configuration](screenshots/step3-core-staticip4.png)
-
-![Server Core DNS](screenshots/step3-core-dns.png)
+![Authentication Test](screenshots/step7-verify.png)
 
 ---
 
-# Step 4 — Installing Active Directory
+## Full Lab Guide
 
-Active Directory Domain Services (AD DS) was installed on **GA-DC-01**.
+For the complete step-by-step walkthrough, including prerequisites, VM creation, networking, server promotion, DNS setup, and domain joining, view the full guide here:
 
-The server was then promoted to a **Domain Controller** for the domain:
-homelab.local
-
-This allows the server to manage authentication, users, computers, and other domain resources.
+[Active Directory Lab Guide](docs/active-directory-lab-guide.md)
 
 ---
 
-# Step 5 — Creating Organizational Units and Users
+## Build Summary
 
-To simulate a corporate environment, several Organizational Units were created:
+This homelab was built in the following phases:
 
-- Servers
-- Computers
-- Employees
-- IT Admins
-
-User accounts were created inside the domain to represent employees who would log into domain-joined systems.
-
----
-
-# Step 6 — Joining Systems to the Domain
-
-The remaining systems were joined to the domain:
-
-- GA-SVR1
-- GA-Core
-- GA-Client
-
-Once joined, the machines appeared in **Active Directory Users and Computers** and could be managed centrally.
+1. Prepared the virtualization environment and downloaded the required operating system images
+2. Created virtual machines in Oracle VirtualBox
+3. Configured internal networking and static IP addressing
+4. Installed and promoted the Domain Controller
+5. Configured DNS and validated connectivity
+6. Created a structured Active Directory environment
+7. Joined systems to the domain
+8. Tested authentication and administrative functionality
 
 ---
 
-# Step 7 — Testing Domain Authentication
+## Lessons Learned
 
-To confirm that the environment was functioning correctly, the Windows 11 client was used to log in using a domain account.
+Through this project, I strengthened my understanding of:
 
-Example login:
-homelab\josh.smith
-
-Successful authentication confirmed that:
-
-- Active Directory was functioning
-- DNS was resolving correctly
-- Domain connectivity was working across the virtual network
+- how Active Directory environments are structured
+- the importance of DNS in domain functionality
+- how domain-joined systems authenticate in a Windows environment
+- how virtualization can be used to safely build and test enterprise infrastructure
+- how technical documentation improves both learning and portfolio presentation
 
 ---
 
-# Lessons Learned
+## Why This Project Matters
 
-Building this homelab provided hands-on experience with several important system administration tasks:
+This homelab demonstrates practical, hands-on experience with core IT and cybersecurity technologies used in real enterprise environments.
 
-- Deploying Active Directory Domain Services
-- Configuring DNS
-- Assigning static IP addresses
-- Creating Organizational Units and users
-- Joining systems to a Windows domain
-- Troubleshooting networking and authentication issues
+Rather than only studying concepts in theory, this project shows the ability to:
 
-During testing, several issues were encountered such as firewall rules blocking ping requests and domain authentication failing when the Domain Controller was offline. Resolving these issues helped reinforce how the different components of a Windows domain environment work together.
+- build and configure Windows infrastructure
+- manage identity and authentication services
+- document technical work clearly
+- troubleshoot systems in a controlled lab environment
 
----
-
-# Future Improvements
-
-Possible improvements to expand this lab include:
-
-- Implement Group Policy Objects (GPO)
-- Configure shared network drives
-- Deploy a secondary domain controller
-- Implement DHCP services
-- Add centralized logging or SIEM monitoring
