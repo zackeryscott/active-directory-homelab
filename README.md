@@ -4,6 +4,12 @@ This project documents the process of building an Active Directory home lab usin
 
 ---
 
+# Network Architecture
+
+![Network Diagram](images/network-diagram.png)
+
+---
+
 # Lab Environment
 
 The lab consists of four virtual machines that simulate a small corporate network.
@@ -48,12 +54,6 @@ Below are some key steps from the lab build process.
 
 ![Domain Login](screenshots/step7-verify.png)
 
----
----
-
-# Network Architecture
-
-![Network Diagram](images/network-diagram.png)
 
 ---
 
