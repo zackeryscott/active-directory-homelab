@@ -656,16 +656,16 @@ To create a user account:
 1. Right-click the **Employees** Organizational Unit
 2. Select **New**
 3. Click **User**
-4. Enter the user’s first name, last name, and username
+4. Enter the user’s first name, last name, and logon name
 5. Click **Next**
 6. Assign a password for the account
 7. Complete the wizard to create the user
 
-Using this process, I created the following users:
+Using this process, I created the following sample users:
 
-* josh.smith
-* sally.doe
-* helpdesk.admin
+* **Josh Smith** — logon name: **j.smith**
+* **Sally Doe** — logon name: **s.doe**
+* **Helpdesk Admin** — logon name: **helpdesk.admin**
 
 These accounts will be used later when testing domain authentication and logging into domain-joined machines.
 
@@ -683,7 +683,7 @@ These accounts will be used later when testing domain authentication and logging
 
 After creating the Organizational Units and user accounts, I reviewed the structure inside **Active Directory Users and Computers** to verify everything had been created correctly.
 
-At this point, the domain structure included the newly created OUs as well as the test user accounts inside the **Employees** organizational unit.
+At this point, the domain structure included the newly created OUs as well as the test user accounts inside the **Employees** Organizational Unit.
 
 This confirms that Active Directory is functioning correctly and that domain objects can be created and managed successfully.
 
@@ -803,7 +803,7 @@ After joining the machines to the domain, I moved them into the appropriate Orga
 Using **Active Directory Users and Computers**:
 
 * I moved the servers into the **Servers** OU
-* I placed the client workstation in the **Computers** OU
+* I placed the client workstation in the default **Computers** container
 
 This helps keep servers and workstations separated and reflects how systems are typically organized in many Active Directory environments.
 
@@ -812,14 +812,13 @@ This helps keep servers and workstations separated and reflects how systems are 
 ![Organizing Domain Computers](../screenshots/step6-organizing-domain-comptuers.png)
 
 ---
-
 # Step 7 — Testing Domain Authentication
 
 ## Overview
 
 With the servers and client workstation successfully joined to the domain, the final step is to verify that domain authentication is working properly.
 
-One of the main benefits of Active Directory is centralized authentication. This allows users to log into any domain-joined machine using their domain credentials instead of local accounts.
+One of the main benefits of Active Directory is centralized authentication. This allows users to log into domain-joined machines using their domain credentials instead of local accounts.
 
 In this step, I tested the environment by logging into the client workstation using one of the domain user accounts that was created earlier.
 
@@ -827,9 +826,11 @@ In this step, I tested the environment by logging into the client workstation us
 
 ## Signing in with a Domain User
 
-To test domain authentication, I logged into the Windows 11 client machine using the domain user account:
+To test domain authentication, I logged into the Windows 11 client machine using the domain user account for **Josh Smith**.
 
-* `j.smith`
+Although the user's full name is **Josh Smith**, the account was configured with the logon name **j.smith**, so the correct domain sign-in format is:
+
+* `homelab\j.smith`
 
 At the login screen:
 
@@ -859,6 +860,7 @@ To verify this, I opened **Command Prompt** and ran the following command:
 
 ```powershell
 whoami
+
 ```
 
 The result displayed:
@@ -867,7 +869,7 @@ The result displayed:
 homelab\j.smith
 ```
 
-This confirms that the system successfully authenticated the user through the `homelab.local` domain.
+This confirms the user authenticated successfully with the domain account homelab\j.smith, which is the configured logon name for Josh Smith.
 
 ### Verification Screenshot
 
